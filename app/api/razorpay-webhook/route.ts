@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { google } from "googleapis";
+import { findProductByAmount } from "@/products";
 
 export const runtime = "nodejs";
 
@@ -8,8 +9,6 @@ const {
   RAZORPAY_WEBHOOK_SECRET,
   GOOGLE_SERVICE_ACCOUNT_EMAIL,
   GOOGLE_PRIVATE_KEY,
-  GOOGLE_DOC_ID,
-  PRODUCT_AMOUNT_PAISE,
 } = process.env;
 
 function verifySignature(rawBody: string, signature: string | null): boolean {
@@ -39,15 +38,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
   const event = JSON.parse(rawBody);
-  // Temporary: capture full payloads to design multi-product matching.
-  console.log("webhook event", event.event, JSON.stringify(event.payload));
   if (event.event !== "payment.captured") return NextResponse.json({ ignored: event.event });
 
   const payment = event.payload?.payment?.entity;
   console.log("payment.captured", JSON.stringify(payment));
 
-  if (PRODUCT_AMOUNT_PAISE && String(payment?.amount) !== PRODUCT_AMOUNT_PAISE) {
-    return NextResponse.json({ ignored: "different product/amount" });
+  const product = findProductByAmount(payment?.amount);
+  if (!product) {
+    console.error("No product for amount", payment?.amount, "payment", payment?.id);
+    return NextResponse.json({ ignored: "no product for this amount" });
   }
 
   const email: string | undefined = (payment?.email || payment?.notes?.email)?.trim().toLowerCase();
@@ -58,16 +57,16 @@ export async function POST(req: NextRequest) {
 
   try {
     await getDrive().permissions.create({
-      fileId: GOOGLE_DOC_ID!,
+      fileId: product.docId,
       sendNotificationEmail: true,
-      emailMessage: "Thanks for your purchase! Open this doc while signed in to this Google account. Access is personal to you.",
+      emailMessage: `Thanks for purchasing ${product.name}! Open this doc while signed in to this Google account. Access is personal to you.`,
       requestBody: { type: "user", role: "reader", emailAddress: email },
       fields: "id",
     });
-    console.log("Shared doc with", email, "payment", payment.id);
+    console.log("Shared doc with", email, "product", product.name, "payment", payment.id);
     return NextResponse.json({ ok: true });
   } catch (err: any) {
-    console.error("Drive share failed", { email, paymentId: payment?.id, error: err?.message });
+    console.error("Drive share failed", { email, product: product.name, paymentId: payment?.id, error: err?.message });
     return NextResponse.json({ error: "share failed" }, { status: 500 });
   }
 }

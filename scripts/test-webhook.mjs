@@ -1,4 +1,5 @@
-// Usage: npm run test:webhook -- <email> [url] [--bad-signature]
+// Usage: npm run test:webhook -- <email> [url] [--amount=<paise>] [--bad-signature]
+// --amount defaults to 77700 (₹777); use a product's amountPaise from products.ts.
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -24,7 +25,7 @@ const badSignature = args.includes("--bad-signature");
 const [email, url = "http://localhost:3000/api/razorpay-webhook"] = args.filter((a) => !a.startsWith("--"));
 
 if (!email) {
-  console.error("Usage: npm run test:webhook -- <email> [url] [--bad-signature]");
+  console.error("Usage: npm run test:webhook -- <email> [url] [--amount=<paise>] [--bad-signature]");
   process.exit(1);
 }
 
@@ -34,7 +35,8 @@ if (!secret) {
   console.error("RAZORPAY_WEBHOOK_SECRET is not set in .env.local or the environment");
   process.exit(1);
 }
-const amount = Number(env.PRODUCT_AMOUNT_PAISE || 100);
+const amountArg = args.find((a) => a.startsWith("--amount="));
+const amount = Number(amountArg ? amountArg.split("=")[1] : 77700);
 
 const paymentId = `pay_test_${Date.now()}`;
 const payload = {
