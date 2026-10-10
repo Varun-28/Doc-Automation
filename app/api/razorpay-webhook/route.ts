@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
   const event = JSON.parse(rawBody);
+  // Temporary: capture full payloads to design multi-product matching.
+  console.log("webhook event", event.event, JSON.stringify(event.payload));
   if (event.event !== "payment.captured") return NextResponse.json({ ignored: event.event });
 
   const payment = event.payload?.payment?.entity;
