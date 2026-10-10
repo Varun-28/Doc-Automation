@@ -7,6 +7,9 @@
 //   2. Create a Razorpay Payment Page with a fixed, unique price and required email.
 //   3. Add an entry below and push to main.
 
+// Shown as the sender name on the purchase email (sent from GMAIL_USER).
+export const SELLER_NAME = "Shilpe Saxena";
+
 export type Product = {
   name: string;
   amountPaise: number;

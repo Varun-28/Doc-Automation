@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { google } from "googleapis";
-import { findProductByAmount } from "@/products";
+import { findProductByAmount, type Product } from "@/products";
+import { sendAccessEmail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
 
@@ -26,6 +27,35 @@ function getDrive() {
     scopes: ["https://www.googleapis.com/auth/drive"],
   });
   return google.drive({ version: "v3", auth });
+}
+
+type Drive = ReturnType<typeof getDrive>;
+
+async function hasAccess(drive: Drive, fileId: string, email: string): Promise<boolean> {
+  let pageToken: string | undefined;
+  do {
+    const res = await drive.permissions.list({
+      fileId,
+      fields: "nextPageToken, permissions(emailAddress)",
+      pageSize: 100,
+      pageToken,
+    });
+    if (res.data.permissions?.some((p) => p.emailAddress?.toLowerCase() === email)) return true;
+    pageToken = res.data.nextPageToken ?? undefined;
+  } while (pageToken);
+  return false;
+}
+
+async function share(drive: Drive, product: Product, email: string, notify: boolean) {
+  await drive.permissions.create({
+    fileId: product.docId,
+    sendNotificationEmail: notify,
+    ...(notify && {
+      emailMessage: `Thanks for purchasing ${product.name}! Open this doc while signed in to this Google account. Access is personal to you.`,
+    }),
+    requestBody: { type: "user", role: "reader", emailAddress: email },
+    fields: "id",
+  });
 }
 
 export async function GET() {
@@ -56,14 +86,36 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await getDrive().permissions.create({
-      fileId: product.docId,
-      sendNotificationEmail: true,
-      emailMessage: `Thanks for purchasing ${product.name}! Open this doc while signed in to this Google account. Access is personal to you.`,
-      requestBody: { type: "user", role: "reader", emailAddress: email },
-      fields: "id",
-    });
+    const drive = getDrive();
+    // Skip buyers who already have access: re-sharing makes Google re-send its
+    // invite email, e.g. on Razorpay webhook retries.
+    if (await hasAccess(drive, product.docId, email)) {
+      console.log("Already has access", email, "product", product.name, "payment", payment.id);
+      return NextResponse.json({ ok: true, alreadyShared: true });
+    }
+
+    // Share silently and send our own branded email. Google's own invite email
+    // is the fallback: Drive requires it for non-Google addresses, and we use
+    // it if our email fails so the buyer always hears about their purchase.
+    let notifiedByGoogle = false;
+    try {
+      await share(drive, product, email, false);
+    } catch (err: any) {
+      console.warn("Silent share failed, retrying with Google notification", { email, error: err?.message });
+      await share(drive, product, email, true);
+      notifiedByGoogle = true;
+    }
     console.log("Shared doc with", email, "product", product.name, "payment", payment.id);
+
+    if (!notifiedByGoogle) {
+      try {
+        await sendAccessEmail(email, product);
+        console.log("Emailed", email, "product", product.name);
+      } catch (err: any) {
+        console.error("Purchase email failed, falling back to Google notification", { email, error: err?.message });
+        await share(drive, product, email, true);
+      }
+    }
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     console.error("Drive share failed", { email, product: product.name, paymentId: payment?.id, error: err?.message });

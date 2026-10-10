@@ -5,7 +5,7 @@ description: Everything about the Doc-Automation app — a Next.js webhook on Ve
 
 # Doc-Automation
 
-Sells view access to Google Docs. A buyer pays on a Razorpay Payment Page, and Razorpay sends a `payment.captured` webhook to this app. The app finds the product by the amount paid, then uses a Google service account to share that product's Doc with the buyer's email as a **reader**, with Google's notification email turned on.
+Sells view access to Google Docs. A buyer pays on a Razorpay Payment Page, and Razorpay sends a `payment.captured` webhook to this app. The app finds the product by the amount paid, uses a Google service account to share that product's Doc with the buyer's email as a **reader** (silently), then sends its own branded email from **"Shilpe Saxena" <sketchandtech@gmail.com>** through Gmail SMTP.
 
 ```
 Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captured
@@ -14,8 +14,11 @@ Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captur
           2. ignore events other than payment.captured (order.paid also arrives and is ignored)
           3. product = PRODUCTS entry whose amountPaise == payment.amount (none → ignored)
           4. email = payment.email || payment.notes.email (trimmed, lowercased)
-          5. Drive API permissions.create(product.docId, reader, sendNotificationEmail)
-      → Google emails the buyer the Doc link
+          5. buyer already has access → stop (no email; covers webhook retries)
+          6. Drive permissions.create(reader, sendNotificationEmail: false)
+             (if that fails, e.g. non-Google address → share with Google's notification instead)
+          7. send branded email via Gmail (lib/mailer.ts)
+             (if that fails → re-share with Google's notification as fallback)
 ```
 
 **Never commit or print secrets.** The webhook secret and the private key live only in `.env.local` (gitignored) and in Vercel env vars.
@@ -44,11 +47,12 @@ Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captur
 
 ## Files
 
-- `products.ts`: **the single place to configure products** (`name`, `amountPaise`, `docId`). It throws an error if two products share a price.
+- `products.ts`: **the single place to configure products** (`name`, `amountPaise`, `docId`) and `SELLER_NAME` (the email sender name). It throws an error if two products share a price.
+- `lib/mailer.ts`: the purchase email (nodemailer + Gmail App Password). Subject "Your <product> is ready" with an Open button. Edit the wording here.
 - `app/api/razorpay-webhook/route.ts`: the webhook. `GET` is the health check and `POST` is the webhook. It declares `export const runtime = "nodejs"`.
 - `scripts/test-webhook.mjs`: sends a signed fake `payment.captured`. It reads `RAZORPAY_WEBHOOK_SECRET` from `.env.local`. The amount comes from `--amount=<paise>`; the default is 77700.
 - `next.config.ts`: `cacheComponents: false`. This is required, because Next 16.4 enables Cache Components by default, and Cache Components rejects the `runtime` segment config with a build error.
-- `.env.example`: the three secret keys. `.env.local` holds the real values; the Vercel CLI also adds a `VERCEL_OIDC_TOKEN` there.
+- `.env.example`: the secret keys. `.env.local` holds the real values; the Vercel CLI also adds a `VERCEL_OIDC_TOKEN` there.
 - `.gitignore`: ignores `.env*` except `.env.example`, and ignores `service-account*.json`, `*-key.json`, `*credentials*.json` and `.vercel`.
 - `AGENTS.md`: `next dev` regenerates it. It warns that Next 16 differs from training data, so check `node_modules/next/dist/docs/` before changing Next APIs.
 
@@ -61,6 +65,8 @@ These are set in `.env.local` and in Vercel **production**:
 | `RAZORPAY_WEBHOOK_SECRET` | Must match the secret set on the Razorpay webhook exactly |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | `client_email` from the key JSON |
 | `GOOGLE_PRIVATE_KEY` | `private_key` from the key JSON. `.env.local` stores it with literal `\n` inside quotes; Vercel stores it with real newlines. The code handles both |
+| `GMAIL_USER` | `sketchandtech@gmail.com`, the account the purchase email is sent from |
+| `GMAIL_APP_PASSWORD` | A 16-character Google App Password named "Doc Automation" (myaccount.google.com/apppasswords; it needs 2-Step Verification). Revoke it there to stop email. If it's missing or wrong, buyers get Google's plain invite email instead |
 
 A change to a Vercel env var only takes effect after a **new deployment**. Doc IDs and prices are not env vars; they live in `products.ts`.
 
@@ -100,7 +106,7 @@ curl -s $U                                                        # {"status":"o
 npm run test:webhook -- someone@gmail.com $U --amount=77700
 vercel logs --environment production --since 10m --expand | grep -E "Shared doc|share failed|No product|No buyer"
 ```
-Logs can lag by 10–20 seconds. The test really shares the Doc with that email, so use your own addresses.
+Logs can lag by 10–20 seconds. The test really shares the Doc and emails that address, so use your own addresses. Addresses that already have access are skipped.
 
 ### Real test payment through Razorpay (Test Mode)
 Open the page and pay with the domestic test card **`4100 2800 0000 1007`**, any future expiry, any CVV and OTP `1234` (4–10 digits succeeds). Netbanking or Wallet with the "Success" button also works.
@@ -145,7 +151,8 @@ The prices in `products.ts` must match the Live pages. Make one small real payme
 | Build error: `Route segment config "runtime" is not compatible with nextConfig.cacheComponents` | Keep `cacheComponents: false` in `next.config.ts`. |
 | `vercel git connect` can't parse the URL | The CLI reads the `github-personal` SSH alias and ignores the URL argument. Connect the repo in the Vercel dashboard (Settings → Git) instead. This is already done. |
 | `npm i -g` gives EACCES | npm's global folder `/usr/local` is owned by root. Use `sudo`, or use `npx vercel@latest`. |
-| Re-running the test with the same email doesn't send a new email | Expected. The permission already exists, so Drive treats the call as a no-op. |
+| Testing re-sends emails to old test addresses | It no longer does: the webhook skips anyone who already has access (`{"alreadyShared":true}`). Note that Drive's `permissions.create` **does** re-send Google's invite if called again for an existing reader. To test the email again, remove that address from the Doc's Share dialog first. |
+| Buyer got Google's plain "doc-seller@… shared a document" email instead of the branded one | Check the logs for "Purchase email failed" (Gmail App Password revoked or changed?) or "Silent share failed" (a non-Google address). |
 
 ## Known loose ends
 
