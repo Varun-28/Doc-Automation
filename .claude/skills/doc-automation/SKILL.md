@@ -45,6 +45,14 @@ Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captur
 |---|---|---|---|
 | Website Performance Doc | ₹299 (`29900`) | `1VVZLUNgZxbM3STNlFD6luPpei2iN2n2QJOMsNugQ3dk` | Test: `pl_TlROtbwCoCde4s`, `https://rzp.io/rzp/4dQSsiD` |
 
+## Public website
+
+The same Next.js app serves the seller's site at **https://shilpe.codes**. The domain is added in Vercel, and DNS at the registrar is an `A @ 216.198.79.1` record. The `.vercel.app` URL keeps working, so the webhook URL doesn't need to change. Its pages are the home/about page, `/products`, `/products/[slug]`, `/contact` and the Razorpay-required policies (`/terms`, `/privacy`, `/refund-policy`, `/shipping-policy`).
+- `lib/site.ts`: the seller's name, contact details, address (it must match the Razorpay KYC), socials and the date the policies were last updated.
+- `lib/catalog.ts`: what each product page shows, including its `paymentUrl` (the Razorpay Payment Page link). The price is read from `products.ts`, matched by `productName`.
+- To add a product to the site, add an entry to `lib/catalog.ts` whose `productName` matches a `PRODUCTS` entry.
+- Theme: `data-theme` on `<html>`, set before paint by `THEME_SCRIPT` in `components/ThemeToggle.tsx`. Scroll animations come from `components/RevealObserver.tsx`; content is hidden only after it runs.
+
 ## Files
 
 - `products.ts`: **the single place to configure products** (`name`, `amountPaise`, `docId`) and `SELLER_NAME` (the email sender name). It throws an error if two products share a price.
