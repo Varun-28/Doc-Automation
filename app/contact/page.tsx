@@ -2,8 +2,8 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
-import { Clock, Mail, MapPin, Phone } from "@/components/icons";
-import { formatAddress, SITE } from "@/lib/site";
+import { Clock, Mail, Phone } from "@/components/icons";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -47,23 +47,6 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="card contact-card" data-reveal style={{ "--delay": "0.16s" } as CSSProperties}>
-              <span className="focus-icon">
-                <MapPin />
-              </span>
-              <div>
-                <h2 className="h3">Address</h2>
-                <address className="muted" style={{ marginTop: 4 }}>
-                  {SITE.legalName}
-                  {formatAddress().map((line) => (
-                    <span key={line}>
-                      <br />
-                      {line}
-                    </span>
-                  ))}
-                </address>
-              </div>
-            </div>
-            <div className="card contact-card" data-reveal style={{ "--delay": "0.24s" } as CSSProperties}>
               <span className="focus-icon">
                 <Clock />
               </span>

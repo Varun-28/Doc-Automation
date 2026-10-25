@@ -11,8 +11,8 @@ export const SITE = {
   tagline: "Frontend Engineer · Web Performance · React & Next.js",
   email: "sketchandtech@gmail.com",
   phone: "+91 92172 44071",
-  // Where she lives and works, for the bio. The contact address below is the
-  // registered one and must match the Razorpay KYC.
+  // Where she lives and works, for the bio. The address below is the
+  // registered one (shown on the policy pages and footer) and must match the Razorpay KYC.
   basedIn: "Bengaluru, Karnataka",
   address: {
     line1: "35D/9A, Preetam Nagar",
@@ -36,8 +36,3 @@ export const SITE = {
     { label: "Medium", href: "https://medium.com/@shilpecsaxena9098" },
   ],
 } as const;
-
-export function formatAddress() {
-  const a = SITE.address;
-  return [a.line1, a.line2, `${a.city}, ${a.state} ${a.pincode}`, a.country];
-}

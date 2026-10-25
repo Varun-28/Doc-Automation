@@ -1524,6 +1524,9 @@ ul.plain {
   .contact-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .contact-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 .contact-card {
   display: flex;
@@ -1534,9 +1537,6 @@ ul.plain {
   color: var(--accent);
   font-weight: 700;
   word-break: break-word;
-}
-.contact-card address {
-  font-style: normal;
 }
 
 /* ---------- Reveal-on-scroll ---------- */

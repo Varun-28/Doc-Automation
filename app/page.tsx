@@ -9,7 +9,7 @@ import { SITE } from "@/lib/site";
 import portrait from "@/assets/shilpe.jpg";
 
 const STATS = [
-  { value: "3.5+ yrs", label: "Building production frontends" },
+  { value: "4+ yrs", label: "Building production frontends" },
   { value: "1M+", label: "Monthly visits on the site I optimised" },
   { value: "7K+", label: "Developers following on LinkedIn" },
   { value: "4.9★", label: "Rating from 1:1 mentoring sessions" },
@@ -98,7 +98,7 @@ export default function Home() {
               I make websites <span className="gradient-text">fast</span>.
             </h1>
             <p className="lead">
-              I&apos;m a {SITE.role} based in Bengaluru with 3.5+ years of experience in React and Next.js. I spent
+              I&apos;m a {SITE.role} based in Bengaluru with 4+ years of experience in React and Next.js. I spent
               more than six months fixing performance on a large production e-commerce site, and now I turn that work
               into practical guides you can use straight away.
             </p>
@@ -173,7 +173,7 @@ export default function Home() {
             <div className="about-copy" style={{ marginTop: 20 }}>
               <p>
                 I&apos;m <strong>{SITE.name}</strong>, a {SITE.role} based in {SITE.basedIn}.
-                I&apos;ve spent the last 3.5+ years building fast, scalable web apps with{" "}
+                I&apos;ve spent the last 4+ years building fast, scalable web apps with{" "}
                 <strong>React, Next.js, TypeScript, Remix and Shopify Hydrogen</strong>, for startups and product
                 companies in India and Australia.
               </p>
