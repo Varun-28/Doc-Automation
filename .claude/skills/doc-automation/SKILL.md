@@ -47,7 +47,9 @@ Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captur
 
 ## Public website
 
-The same Next.js app serves the seller's site at **https://shilpe.codes**. The domain is added in Vercel, and DNS at the registrar is an `A @ 216.198.79.1` record. The `.vercel.app` URL keeps working, so the webhook URL doesn't need to change. Its pages are the home/about page, `/products`, `/products/[slug]`, `/contact` and the Razorpay-required policies (`/terms`, `/privacy`, `/refund-policy`, `/shipping-policy`).
+The same Next.js app serves the seller's site at **https://shilpe-codes.vercel.app**. `shilpe.codes` is added in Vercel but isn't connected yet; it needs an `A @ 216.198.79.1` record at its registrar, and then `SITE.url` should change to it.
+
+**Never remove `doc-automation-nine.vercel.app` from the project's domains.** It's the Razorpay webhook URL. Editing that domain in the dashboard *replaces* it, which once broke the webhook (`DEPLOYMENT_NOT_FOUND`). Add new domains with **Add** instead. To restore it: `vercel domains add doc-automation-nine.vercel.app doc-automation`. Its pages are the home/about page, `/products`, `/products/[slug]`, `/contact` and the Razorpay-required policies (`/terms`, `/privacy`, `/refund-policy`, `/shipping-policy`).
 - `lib/site.ts`: the seller's name, contact details, address (it must match the Razorpay KYC), socials and the date the policies were last updated.
 - `lib/catalog.ts`: what each product page shows, including its `paymentUrl` (the Razorpay Payment Page link). The price is read from `products.ts`, matched by `productName`.
 - To add a product to the site, add an entry to `lib/catalog.ts` whose `productName` matches a `PRODUCTS` entry.

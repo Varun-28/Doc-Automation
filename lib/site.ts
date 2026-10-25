@@ -3,7 +3,8 @@
 // with the Razorpay account (legal name, contact email, phone and address).
 
 export const SITE = {
-  url: "https://shilpe.codes",
+  // Switch to https://shilpe.codes once that domain is bought and its DNS points at Vercel.
+  url: "https://shilpe-codes.vercel.app",
   name: "Shilpe Saxena",
   // Must match the name on the Razorpay account / KYC.
   legalName: "Shilpe Saxena",
