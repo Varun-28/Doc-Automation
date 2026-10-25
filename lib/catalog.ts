@@ -85,7 +85,7 @@ const ITEMS: CatalogItem[] = [
     faqs: [
       {
         q: "How do I get the playbook after paying?",
-        a: "Enter your Gmail or Google account email at checkout. Within a few minutes the Google Doc is shared with that email as view-only, and you get an email with an Open button. Open it while signed in to the same Google account.",
+        a: "Enter your Gmail or Google account email at checkout. Within a few minutes the Google Doc is shared with that email as view-only, and you get an email from Shilpe Saxena (sketchandtech@gmail.com) with an Open button. Open it while signed in to the same Google account. Don't see it? Check Spam and Promotions, or open Google Drive → Shared with me.",
       },
       {
         q: "Is it a PDF?",

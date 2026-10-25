@@ -1495,6 +1495,26 @@ ul.plain {
   color: var(--text);
 }
 
+/* ---------- Thank-you ---------- */
+.success-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 0 0 10px rgb(34 197 94 / 0.16), 0 16px 32px -12px rgb(22 163 74 / 0.6);
+  animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.success-badge svg {
+  width: 40px;
+  height: 40px;
+}
+.focus-item a {
+  color: var(--accent);
+}
+
 /* ---------- Contact ---------- */
 .contact-grid {
   display: grid;

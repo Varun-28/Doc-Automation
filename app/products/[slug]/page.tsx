@@ -58,7 +58,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[slug
               </a>
               <ul className="plain buy-meta">
                 <li>
-                  <Bolt /> Delivered to your Google account within minutes
+                  <Bolt /> Sent to your email within minutes. Check Spam if it&apos;s not in your inbox
                 </li>
                 <li>
                   <Refresh /> Free future editions in the same doc

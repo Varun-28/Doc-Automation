@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   if (event.event !== "payment.captured") return NextResponse.json({ ignored: event.event });
 
   const payment = event.payload?.payment?.entity;
-  console.log("payment.captured", JSON.stringify(payment));
+  console.log("payment.captured", payment?.id, payment?.amount, payment?.method);
 
   const product = findProductByAmount(payment?.amount);
   if (!product) {
