@@ -43,14 +43,14 @@ Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captur
 
 | Product | Price | Google Doc ID | Razorpay Payment Page |
 |---|---|---|---|
-| Website Performance Doc | ₹777 (`77700`) | `1VVZLUNgZxbM3STNlFD6luPpei2iN2n2QJOMsNugQ3dk` | Test: `pl_TlROtbwCoCde4s`, `https://rzp.io/rzp/4dQSsiD` |
+| Website Performance Doc | ₹299 (`29900`) | `1VVZLUNgZxbM3STNlFD6luPpei2iN2n2QJOMsNugQ3dk` | Test: `pl_TlROtbwCoCde4s`, `https://rzp.io/rzp/4dQSsiD` |
 
 ## Files
 
 - `products.ts`: **the single place to configure products** (`name`, `amountPaise`, `docId`) and `SELLER_NAME` (the email sender name). It throws an error if two products share a price.
 - `lib/mailer.ts`: the purchase email (nodemailer + Gmail App Password). Subject "Your <product> is ready" with an Open button. Edit the wording here.
 - `app/api/razorpay-webhook/route.ts`: the webhook. `GET` is the health check and `POST` is the webhook. It declares `export const runtime = "nodejs"`.
-- `scripts/test-webhook.mjs`: sends a signed fake `payment.captured`. It reads `RAZORPAY_WEBHOOK_SECRET` from `.env.local`. The amount comes from `--amount=<paise>`; the default is 77700.
+- `scripts/test-webhook.mjs`: sends a signed fake `payment.captured`. It reads `RAZORPAY_WEBHOOK_SECRET` from `.env.local`. The amount comes from `--amount=<paise>`; the default is 29900.
 - `next.config.ts`: `cacheComponents: false`. This is required, because Next 16.4 enables Cache Components by default, and Cache Components rejects the `runtime` segment config with a build error.
 - `.env.example`: the secret keys. `.env.local` holds the real values; the Vercel CLI also adds a `VERCEL_OIDC_TOKEN` there.
 - `.gitignore`: ignores `.env*` except `.env.example`, and ignores `service-account*.json`, `*-key.json`, `*credentials*.json` and `.vercel`.
@@ -103,7 +103,7 @@ npm run test:webhook -- someone@gmail.com --bad-signature         # expect 401
 ```sh
 U=https://doc-automation-nine.vercel.app/api/razorpay-webhook
 curl -s $U                                                        # {"status":"ok"}
-npm run test:webhook -- someone@gmail.com $U --amount=77700
+npm run test:webhook -- someone@gmail.com $U --amount=29900
 vercel logs --environment production --since 10m --expand | grep -E "Shared doc|share failed|No product|No buyer"
 ```
 Logs can lag by 10–20 seconds. The test really shares the Doc and emails that address, so use your own addresses. Addresses that already have access are skipped.

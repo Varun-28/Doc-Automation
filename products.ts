@@ -19,7 +19,7 @@ export type Product = {
 export const PRODUCTS: Product[] = [
   {
     name: "Website Performance Doc",
-    amountPaise: 77700, // ₹777
+    amountPaise: 29900, // ₹299
     docId: "1VVZLUNgZxbM3STNlFD6luPpei2iN2n2QJOMsNugQ3dk",
   },
 ];

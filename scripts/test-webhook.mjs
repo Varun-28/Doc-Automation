@@ -1,5 +1,5 @@
 // Usage: npm run test:webhook -- <email> [url] [--amount=<paise>] [--bad-signature]
-// --amount defaults to 77700 (₹777); use a product's amountPaise from products.ts.
+// --amount defaults to 29900 (₹299); use a product's amountPaise from products.ts.
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -36,7 +36,7 @@ if (!secret) {
   process.exit(1);
 }
 const amountArg = args.find((a) => a.startsWith("--amount="));
-const amount = Number(amountArg ? amountArg.split("=")[1] : 77700);
+const amount = Number(amountArg ? amountArg.split("=")[1] : 29900);
 
 const paymentId = `pay_test_${Date.now()}`;
 const payload = {
