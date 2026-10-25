@@ -14,7 +14,7 @@ export type CatalogItem = {
   tagline: string;
   description: string;
   format: string;
-  // The Razorpay Payment Page link. Swap for the Live-mode link once it exists.
+  // The Razorpay Payment Page link (Live mode).
   paymentUrl: string;
   audience: string[];
   includes: string[];
@@ -34,7 +34,7 @@ const ITEMS: CatalogItem[] = [
     description:
       "Six months of real performance work on a large production e-commerce site (about 1 million monthly visits, 10,000+ products), turned into a step-by-step guide. Start from your symptom, find the cause, and apply a fix that has already shipped to production and been measured.",
     format: "53-page Google Doc · view access · free future editions",
-    paymentUrl: "https://rzp.io/rzp/4dQSsiD",
+    paymentUrl: "https://rzp.io/rzp/bG102Jex",
     audience: [
       "Frontend developers handed a “fix our Core Web Vitals” ticket",
       "React and Next.js engineers working on large, content-heavy sites",

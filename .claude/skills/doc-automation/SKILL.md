@@ -43,11 +43,11 @@ Buyer → Razorpay Payment Page (fixed, unique price) → webhook payment.captur
 
 | Product | Price | Google Doc ID | Razorpay Payment Page |
 |---|---|---|---|
-| Website Performance Doc | ₹299 (`29900`) | `1VVZLUNgZxbM3STNlFD6luPpei2iN2n2QJOMsNugQ3dk` | Test: `pl_TlROtbwCoCde4s`, `https://rzp.io/rzp/4dQSsiD` |
+| Website Performance Doc | ₹299 (`29900`) | `1VVZLUNgZxbM3STNlFD6luPpei2iN2n2QJOMsNugQ3dk` | Live: `pl_Ts38GRSo27VzD6`, `https://rzp.io/rzp/bG102Jex` (old Test page: `pl_TlROtbwCoCde4s`, still set to ₹777) |
 
 ## Public website
 
-The same Next.js app serves the seller's site at **https://shilpe-codes.vercel.app**. `shilpe.codes` is added in Vercel but isn't connected yet; it needs an `A @ 216.198.79.1` record at its registrar, and then `SITE.url` should change to it.
+The same Next.js app serves the seller's site at **https://shilpe-codes.vercel.app**. No custom domain is planned.
 
 **Never remove `doc-automation-nine.vercel.app` from the project's domains.** It's the Razorpay webhook URL. Editing that domain in the dashboard *replaces* it, which once broke the webhook (`DEPLOYMENT_NOT_FOUND`). Add new domains with **Add** instead. To restore it: `vercel domains add doc-automation-nine.vercel.app doc-automation`. Its pages are the home/about page, `/products`, `/products/[slug]`, `/contact` and the Razorpay-required policies (`/terms`, `/privacy`, `/refund-policy`, `/shipping-policy`).
 - `lib/site.ts`: the seller's name, contact details, address (it must match the Razorpay KYC), socials and the date the policies were last updated.
