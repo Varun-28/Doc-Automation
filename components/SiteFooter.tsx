@@ -42,6 +42,9 @@ export function SiteFooter() {
               <li>
                 <Link href="/products">All products</Link>
               </li>
+              <li>
+                <Link href="/website-performance">Free website performance guide</Link>
+              </li>
               {CATALOG.map((item) => (
                 <li key={item.slug}>
                   <Link href={`/products/${item.slug}`}>{item.title.replace(/^The /, "")}</Link>

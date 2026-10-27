@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy",
   description: `When ${SITE.legalName} offers refunds and cancellations for digital products, and how to request one.`,
+  alternates: { canonical: "/refund-policy" },
 };
 
 export default function RefundPolicyPage() {

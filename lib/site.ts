@@ -3,6 +3,8 @@
 // with the Razorpay account (legal name, contact email, phone and address).
 
 export const SITE = {
+  // Switching to the custom domain only needs this one line: canonical URLs,
+  // the sitemap, robots.txt, JSON-LD and llms.txt all build from SITE.url.
   url: "https://shilpe-codes.vercel.app",
   name: "Shilpe Saxena",
   // Must match the name on the Razorpay account / KYC.

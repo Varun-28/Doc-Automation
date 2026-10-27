@@ -5,8 +5,11 @@ import { Blobs, ImpactBars, ScoreRings } from "@/components/Graphics";
 import { ProductCard } from "@/components/ProductCard";
 import { ArrowRight, Code, Gauge, Phone, Users } from "@/components/icons";
 import { CATALOG } from "@/lib/catalog";
+import type { Metadata } from "next";
 import { SITE } from "@/lib/site";
 import portrait from "@/assets/shilpe.jpg";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const STATS = [
   { value: "4+ yrs", label: "Building production frontends" },
@@ -98,7 +101,7 @@ export default function Home() {
               I make websites <span className="gradient-text">fast</span>.
             </h1>
             <p className="lead">
-              I&apos;m a {SITE.role} based in Bengaluru with 4+ years of experience in React and Next.js. I spent
+              I&apos;m a {SITE.role} based in Bengaluru with 4+ years of experience in React and Next.js, specialising in website performance. I spent
               more than six months fixing performance on a large production e-commerce site, and now I turn that work
               into practical guides you can use straight away.
             </p>
@@ -245,6 +248,10 @@ export default function Home() {
             <h2 className="h2">Fixes that shipped, with the numbers to prove it.</h2>
             <p className="lead">
               A few before-and-after results from the production work behind the playbook. No synthetic demos.
+            </p>
+            <p style={{ marginTop: 12 }}>
+              New to this? Read the free guide to{" "}
+              <Link href="/website-performance">website performance and Core Web Vitals</Link>.
             </p>
           </div>
           <div className="grid-2">

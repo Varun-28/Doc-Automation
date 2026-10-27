@@ -6,6 +6,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Shipping & Delivery Policy",
   description: `How and when digital products from ${SITE.legalName} are delivered.`,
+  alternates: { canonical: "/shipping-policy" },
 };
 
 export default function ShippingPolicyPage() {

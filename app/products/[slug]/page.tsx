@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Blobs, BookCover, ImpactBars } from "@/components/Graphics";
+import { JsonLd } from "@/components/JsonLd";
 import { ArrowRight, Bolt, Check, Doc, Lock, Mail, Refresh } from "@/components/icons";
 import { CATALOG, formatPrice, getCatalogItem } from "@/lib/catalog";
+import { breadcrumbSchema, faqSchema, productSchema } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 
 export const dynamicParams = false;
@@ -17,7 +19,14 @@ export async function generateMetadata({ params }: PageProps<"/products/[slug]">
   const { slug } = await params;
   const item = getCatalogItem(slug);
   if (!item) return {};
-  return { title: item.title, description: item.tagline };
+  const path = `/products/${item.slug}`;
+  return {
+    title: item.title,
+    description: item.tagline,
+    keywords: ["website performance", "Core Web Vitals", "LCP", "INP", "CLS", "React performance", "Next.js performance", item.title],
+    alternates: { canonical: path },
+    openGraph: { type: "website", url: path, title: item.title, description: item.tagline },
+  };
 }
 
 export default async function ProductPage({ params }: PageProps<"/products/[slug]">) {
@@ -30,6 +39,15 @@ export default async function ProductPage({ params }: PageProps<"/products/[slug
 
   return (
     <>
+      <JsonLd data={productSchema(item)} />
+      <JsonLd data={faqSchema(item.faqs)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+          { name: item.title, path: `/products/${item.slug}` },
+        ])}
+      />
       {/* ---------- Hero + buy box ---------- */}
       <section className="hero">
         <Blobs grid />
@@ -112,7 +130,9 @@ export default async function ProductPage({ params }: PageProps<"/products/[slug
           <div className="section-head" data-reveal>
             <p className="eyebrow">What&apos;s inside</p>
             <h2 className="h2">22 sections, plus ready-to-use helpers.</h2>
-            <p className="lead">Each topic follows the same shape: the problem, why it happens, the fix, and code you can adapt.</p>
+            <p className="lead">Each topic follows the same shape: the problem, why it happens, the fix, and code you can adapt.{" "}
+              Want the basics first? <Link href="/website-performance">Read the free guide</Link>.
+            </p>
           </div>
           <ol className="plain toc">
             {item.contents.map((c, i) => (

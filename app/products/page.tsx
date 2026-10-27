@@ -6,6 +6,7 @@ import { CATALOG } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: "Products",
   description: "Guides and digital products by Shilpe Saxena on web performance, React and Next.js.",
+  alternates: { canonical: "/products" },
 };
 
 export default function ProductsPage() {

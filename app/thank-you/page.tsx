@@ -9,7 +9,7 @@ import { SITE } from "@/lib/site";
 // ("Redirect URL" in the page's success settings).
 export const metadata: Metadata = {
   title: "Payment successful",
-  robots: { index: false },
+  robots: { index: false, follow: false },
 };
 
 const STEPS = [
