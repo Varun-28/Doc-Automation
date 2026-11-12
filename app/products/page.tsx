@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
 import { ProductCard } from "@/components/ProductCard";
+import { FreeGuideCard } from "@/components/FreeGuideCard";
 import { CATALOG } from "@/lib/catalog";
+import { FREE_GUIDES } from "@/lib/free-guides";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -14,8 +16,8 @@ export default function ProductsPage() {
     <>
       <PageHero eyebrow="Products" title="Guides, docs and courses">
         <p className="lead">
-          Practical, production-tested material for frontend developers. Pay once in INR through Razorpay and get access
-          straight away on your Google account.
+          Practical, production-tested material for frontend developers. Paid products are a one-time payment in INR
+          through Razorpay, with instant access on your Google account. There are free guides to read too.
         </p>
       </PageHero>
       <section className="section">
@@ -27,6 +29,23 @@ export default function ProductsPage() {
           ))}
         </div>
       </section>
+      {FREE_GUIDES.length > 0 && (
+        <section className="section section-alt" aria-labelledby="free-guides-heading">
+          <div className="container">
+            <div className="section-head" data-reveal>
+              <h2 id="free-guides-heading">Free guides</h2>
+              <p className="lead">Open to everyone. No payment or sign-in needed, just click and read.</p>
+            </div>
+            <ul className="grid-2" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {FREE_GUIDES.map((guide) => (
+                <li key={guide.id} data-reveal style={{ minWidth: 0 }}>
+                  <FreeGuideCard guide={guide} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
     </>
   );
 }
